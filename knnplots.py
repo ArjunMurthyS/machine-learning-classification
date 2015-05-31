@@ -1,3 +1,8 @@
+"""
+Cambridge Coding Academy-provided module for plotting graphs related to
+k-nearest neighbours classifier
+"""
+
 import matplotlib.pyplot as plt
 from matplotlib.colors import ListedColormap
 from sklearn import neighbors
