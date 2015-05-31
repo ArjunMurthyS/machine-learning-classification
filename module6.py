@@ -1,33 +1,88 @@
-import csv
-import numpy
-import scipy
-import matplotlib.pyplot as plt
+#!/usr/bin/env python
+
+"""
+Evaluate models using k-fold cross-validation, and find optimum
+set of parameters using grid search.
+"""
+
 from sklearn import preprocessing
 from sklearn.cross_validation import train_test_split
-from sklearn import metrics
 from sklearn import neighbors
-import knnplots
 from sklearn.naive_bayes import GaussianNB
-
 from sklearn import cross_validation
-from sklearn.grid_search import GridSearchCV
+import matplotlib.pyplot as plt
+import wdbc
+
+def cross_validate(model, features_data, classification_data, n_folds):
+    """
+    Cross-validate the given model using n_folds folds.
+    """
+    scores = cross_validation.cross_val_score(
+        model, features_data, classification_data,
+        cv=n_folds
+    )
+    return {
+        'mean': scores.mean(),
+        'sd': scores.std()
+    }
+
+def plot_accuracy_vs_folds(feature_data, classification_data_numerical):
+    """
+    Plot a graph showing how the apparent accuracy of a model changes depending
+    on how many folds are used for cross-validation.
+    """
+
+    # for reasons that weren't thoroughly explained, we deliberately split
+    # the data before further splitting with cross-validation
+    # (it might have something to do with the need to reserve some data
+    #  for a final testing set?)
+    feature_data_train, _, classification_data_train, _ = \
+        train_test_split(feature_data, classification_data_numerical)
+
+    nbayes = GaussianNB().fit(feature_data_train, classification_data_train)
+    knn3 = neighbors.KNeighborsClassifier(n_neighbors=3)
+    knn15 = neighbors.KNeighborsClassifier(n_neighbors=3)
+    models = [nbayes, knn3, knn15]
+    model_names = ['Naive Bayes', '3 nearest neighbour', '15 nearest neighbour']
+
+    mean_accuracies = {}
+    fold_range = range(2, 21)
+
+    for model, model_name in zip(models, model_names):
+        for n_folds in fold_range:
+            scores = cross_validate(
+                model,
+                feature_data_train, classification_data_train,
+                n_folds
+            )
+            if not model_name in mean_accuracies.keys():
+                mean_accuracies[model_name] = []
+            mean_accuracies[model_name].append(scores['mean'])
+
+    for model_name in model_names:
+        plt.plot(fold_range, mean_accuracies[model_name], label=model_name)
+    plt.legend(loc='best')
+    plt.ylim(0.5, 1)
+    plt.title("Mean Accuracy of Model for Different Numbers of Folds")
+    print("For this data set and this set of models, the accuracy changes\n"
+          "very little with differing numbers of folds.\n"
+          "This indicates good generalisation of the models.\n")
+    plt.show()
 
 
-#Code common to all modeles from module 3 onwards
-##NB. The X and yTransformed variables come from the preprocessing in the previous module.
-fileName = "wdbc.csv"
-fileOpen = open(fileName, "rU")
-csvData = csv.reader(fileOpen)
-dataList = list(csvData)
-dataArray =  numpy.array(dataList)
-X = dataArray[:,2:32].astype(float)
-y = dataArray[:, 1]
-le = preprocessing.LabelEncoder()
-le.fit(y)
-yTransformed = le.transform(y)
-XTrain, XTest, yTrain, yTest = train_test_split(X, yTransformed)
+def main():
+    """
+    Main function of the script.
+    """
 
-knnK3 = neighbors.KNeighborsClassifier(n_neighbors = 3)
-knnK15 = neighbors.KNeighborsClassifier(n_neighbors = 15)
-nbmodel = GaussianNB()
+    feature_data, classification_data = wdbc.load_data_set()
 
+    # scikit-learn functions require classification in terms of numerical
+    # values (i.e. 0, 1, 2) instead of strings (e.g. 'benign', 'malignant')
+    label_encoder = preprocessing.LabelEncoder()
+    label_encoder.fit(classification_data)
+    classification_data_numerical = label_encoder.transform(classification_data)
+
+    plot_accuracy_vs_folds(feature_data, classification_data_numerical)
+
+main()
