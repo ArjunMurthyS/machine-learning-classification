@@ -47,31 +47,56 @@ def plot_features(iris_dict):
     class_colours = ["blue", "magenta", "cyan"]
     # the index of each class in target_names
     class_indices = [0, 1, 2]
-    # the indices (the column indices in iris.data)
-    # of the two features to plot against each other
-    feature_1_index = 0
-    feature_2_index = 1
 
     graph_data = zip(class_markers, class_colours, class_indices, labels)
-    for mark, col, i, label in graph_data:
-        # this uses a couple of numpy ndarray-specific functions:
-        # * ndarray == <scalar> does element-wise equality testing, returning
-        #   a matrix the same size as the original filled with booleans
-        # * ndarray[boolean array] returns a one-dimensional array filled with
-        #   the elements of the original matrix corresponding to true values in
-        #   the boolean array
-        #   (http://docs.scipy.org/doc/numpy/reference/arrays.indexing.html#boolean-array-indexing)
-        feature_1_data = x_matrix[iris_dict.target == i, feature_1_index]
-        feature_2_data = x_matrix[iris_dict.target == i, feature_2_index]
 
-        plt.scatter(
-            x=feature_1_data, y=feature_2_data,
-            marker=mark, c=col, label=label
-        )
+    n_graph_rows = n_graph_cols = len(iris_dict.feature_names)
+    graph_n = 1
 
-    plt.legend(loc='best')
-    plt.xlabel(iris_dict.feature_names[feature_1_index])
-    plt.ylabel(iris_dict.feature_names[feature_2_index])
+    # sizes in inches
+    fig = plt.figure(figsize=(15, 10))
+    fig.suptitle("Clustering of Iris Data", fontsize=20)
+
+    for feature_1_index in range(len(iris_dict.feature_names)):
+        for feature_2_index in range(len(iris_dict.feature_names)):
+
+            plt.subplot(n_graph_rows, n_graph_cols, graph_n)
+            graph_n += 1
+            plt.xlabel(iris_dict.feature_names[feature_1_index])
+            plt.ylabel(iris_dict.feature_names[feature_2_index])
+
+            for mark, col, i, label in graph_data:
+                # this uses a couple of numpy ndarray-specific functions:
+                # * ndarray == <scalar> does element-wise equality testing,
+                #   returning a matrix the same size as the original filled
+                #   with booleans
+                # * ndarray[boolean array] returns a one-dimensional array
+                #   filled with the elements of the original matrix
+                #   corresponding to true values in the boolean array
+                #   (http://docs.scipy.org/doc/numpy/reference/
+                #      arrays.indexing.html#boolean-array-indexing)
+
+                feature_1_data = \
+                    x_matrix[iris_dict.target == i, feature_1_index]
+                feature_2_data = \
+                    x_matrix[iris_dict.target == i, feature_2_index]
+
+                plt.scatter(
+                    x=feature_1_data, y=feature_2_data,
+                    marker=mark, c=col, label=label
+                )
+
+    # fix subplot sizes so that everything fits
+    plt.tight_layout()
+    # tight_layout() doesn't take account of figure title,
+    # move the top of the subplots down to make room
+    plt.subplots_adjust(top=0.85)
+    plt.legend(
+        # use the whole of the figure for the location coordinates
+        bbox_transform=plt.gcf().transFigure,
+        # place the legend at the top right
+        bbox_to_anchor=(0.98, 0.98)
+    )
     plt.show()
 
 plot_features(load_iris_dict())
