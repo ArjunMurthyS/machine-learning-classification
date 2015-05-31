@@ -1,26 +1,54 @@
-import csv
-import numpy
-import scipy
-import matplotlib.pyplot as plt
+#!/usr/bin/env python
+
+"""
+Demonstate Naive Bayes classifier.
+"""
+
+from __future__ import print_function
 from sklearn import preprocessing
 from sklearn.cross_validation import train_test_split
 from sklearn import metrics
-
-#Import for Module 5
+import wdbc
 from sklearn.naive_bayes import GaussianNB
 
-#Code common to all modeles from module 3 onwards
-##NB. The X and yTransformed variables come from the preprocessing in the previous module.
-fileName = "wdbc.csv"
-fileOpen = open(fileName, "rU")
-csvData = csv.reader(fileOpen)
-dataList = list(csvData)
-dataArray =  numpy.array(dataList)
-X = dataArray[:,2:32].astype(float)
-y = dataArray[:, 1]
-le = preprocessing.LabelEncoder()
-le.fit(y)
-yTransformed = le.transform(y)
-XTrain, XTest, yTrain, yTest = train_test_split(X, yTransformed)
+def test_naive_bayes(feature_data, classification_data_numerical):
+    """
+    Demonstrate usage and accuracy of Naive Bayes classifier.
+    """
+    feature_data_train, feature_data_test, \
+    classification_data_train, classification_data_test = \
+        train_test_split(feature_data, classification_data_numerical)
+
+    nbmodel = GaussianNB().fit(feature_data_train, classification_data_train)
+
+    predicted_classification = nbmodel.predict(feature_data_test)
+    print(
+        "Validation metrics for Naive Bayes classifier are:\n",
+        metrics.classification_report(
+            classification_data_test, predicted_classification
+        )
+    )
+    print(
+        "Accuracy is: %.1f%%" %
+        (metrics.accuracy_score(
+            classification_data_test, predicted_classification
+        ) * 100)
+    )
+
+def main():
+    """
+    Main function of the script.
+    """
+
+    feature_data, classification_data = wdbc.load_data_set()
+
+    # scikit-learn functions require classification in terms of numerical
+    # values (i.e. 0, 1, 2) instead of strings (e.g. 'benign', 'malignant')
+    label_encoder = preprocessing.LabelEncoder()
+    label_encoder.fit(classification_data)
+    classification_data_numerical = label_encoder.transform(classification_data)
+
+    test_naive_bayes(feature_data, classification_data_numerical)
 
 
+main()
