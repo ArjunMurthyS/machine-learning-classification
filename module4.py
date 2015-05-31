@@ -145,6 +145,24 @@ def plot_accuracies(feature_data, classification_data_numerical):
                           feature_data_test, classification_data_test,
                           max_n_neighbours)
 
+def plot_decision_boundaries(feature_data, classification_data_numerical):
+    """
+    Plot boundaries of decision between the two classifications.
+    """
+
+    feature_data_train, _, classification_data_train, _ = \
+        train_test_split(feature_data, classification_data_numerical)
+
+    print("\nFor 3 nearest neighbours, note that the boundary line is very\n"
+          "jagged and forms islands around some data points. This may be\n"
+          "a sign that the model is over-fitted.")
+    knnplots.decisionplot(feature_data_train, classification_data_train,
+                          n_neighbors=3, weights='uniform')
+    print("\nFor 15 nearest neighbours, the boundary line is much smoother.\n"
+          "In the extreme, the model can become under-fitted.")
+    knnplots.decisionplot(feature_data_train, classification_data_train,
+                          n_neighbors=15, weights='uniform')
+
 
 def main():
     """
@@ -162,5 +180,6 @@ def main():
     optimise_nearest_neighbours(feature_data, classification_data_numerical)
     validation_metrics(feature_data, classification_data_numerical)
     plot_accuracies(feature_data, classification_data_numerical)
+    plot_decision_boundaries(feature_data, classification_data_numerical)
 
 main()
