@@ -13,7 +13,8 @@ def load_data_set():
     """
     data_set_file_name = "wdbc.csv"
     with open(data_set_file_name, "r") as data_set_file:
-        # csv.reader returns an interator which must be converted into a list first
+        # csv.reader returns an iterator which must be
+        # first converted into a list
         data_set_list = list(csv.reader(data_set_file))
 
     data_set = numpy.asarray(data_set_list)
