@@ -9,6 +9,7 @@ from sklearn import neighbors
 from sklearn import preprocessing
 from sklearn import metrics
 from sklearn.cross_validation import train_test_split
+import knnplots
 import wdbc
 
 def test_nearest_neighbors(feature_data, classification_data_numerical):
@@ -124,6 +125,27 @@ def validation_metrics(feature_data, classification_data_numerical):
         )
     )
 
+def plot_accuracies(feature_data, classification_data_numerical):
+    """
+    Plot accuracy for over a range of values of k neighbours for
+    uniform and distance-based weighting.
+    """
+
+    feature_data_train, feature_data_test, \
+    classification_data_train, classification_data_test = \
+        train_test_split(feature_data, classification_data_numerical)
+
+    max_n_neighbours = 350
+    print("Again note the superior performance of distance-based weighting\n"
+          "for this data set shown by the plot. While uniform weighting\n"
+          "quickly loses accuracy as the number of neighbours considered\n"
+          "increases, the accuracy using distance-based weighting remains\n"
+          "relatively steady.")
+    knnplots.plotaccuracy(feature_data_train, classification_data_train,
+                          feature_data_test, classification_data_test,
+                          max_n_neighbours)
+
+
 def main():
     """
     Main function of the script.
@@ -139,5 +161,6 @@ def main():
     test_nearest_neighbors(feature_data, classification_data_numerical)
     optimise_nearest_neighbours(feature_data, classification_data_numerical)
     validation_metrics(feature_data, classification_data_numerical)
+    plot_accuracies(feature_data, classification_data_numerical)
 
 main()
