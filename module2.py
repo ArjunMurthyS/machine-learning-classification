@@ -29,7 +29,7 @@ def load_iris_dict():
     print("Iris classification types are:\n%s\n" % iris.target_names)
 
     print("Shape of classifications is:\n%s\b" % (iris.target.shape,))
-    print("i.e. one classification for each flower")
+    print("i.e. one classification for each flower\n")
 
     return iris
 
@@ -97,6 +97,14 @@ def plot_features(iris_dict):
         # place the legend at the top right
         bbox_to_anchor=(0.98, 0.98)
     )
+
+    print("Note that some graphs show better separation than others.\n"
+          "For example, sepal width/sepal length shows poor separation for\n"
+          "versicolor/virginica, but petal width/petal length is much better.\n"
+          "\n"
+          "This suggests that petal width/petal length would be the best\n"
+          "features to use for classification.")
+
     plt.show()
 
 plot_features(load_iris_dict())
