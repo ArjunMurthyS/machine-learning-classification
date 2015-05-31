@@ -53,5 +53,5 @@ def decisionplot(XTrain, yTrain, n_neighbors, weights):
     plt.scatter(Xtrain[:, 0], Xtrain[:, 1], c = yTrain, cmap = cmap_bold)
     plt.xlim(xx.min(), xx.max())
     plt.ylim(yy.min(), yy.max())
-    plt.title("2-Class classification (k = %i, weights = '%s')" % (n_neighbors, weights))
+    plt.title("Classification using k-Nearest Neighbours (k = %i, weights = '%s')" % (n_neighbors, weights))
     plt.show()
