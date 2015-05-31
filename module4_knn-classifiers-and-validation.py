@@ -80,7 +80,7 @@ def optimise_nearest_neighbours(feature_data, classification_data_numerical):
                 classification_data_numerical, predicted_classification
             )
             print(
-                "For %d nearest neighbours with %s weighting, accuracy is %.1f"
+                "For %d nearest neighbours with %s weighting, accuracy is %.1f%%"
                 % (n_neighbors, weighting, 100*accuracy)
             )
             if accuracy > max_accuracy:
