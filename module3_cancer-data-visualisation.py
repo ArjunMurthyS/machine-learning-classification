@@ -91,7 +91,7 @@ def plot_feature_distribution(feature_data, classification_data):
 
     # sizes are in inches
     fig = plt.figure(figsize=(4*n_features, 2.5*n_features))
-    fig.suptitle("Distribution of Breast Cancer Cell Data", fontsize=20)
+    fig.suptitle("Distribution of breast cancer cell data", fontsize=20)
 
     n_graph_rows = n_graph_cols = n_features
     graph_n = 1
