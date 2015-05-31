@@ -5,11 +5,13 @@ Evaluate models using k-fold cross-validation, and find optimum
 set of parameters using grid search.
 """
 
+from __future__ import print_function
 from sklearn import preprocessing
 from sklearn.cross_validation import train_test_split
 from sklearn import neighbors
 from sklearn.naive_bayes import GaussianNB
 from sklearn import cross_validation
+from sklearn.grid_search import GridSearchCV
 import matplotlib.pyplot as plt
 import wdbc
 
@@ -66,8 +68,35 @@ def plot_accuracy_vs_folds(feature_data, classification_data_numerical):
     plt.title("Mean Accuracy of Model for Different Numbers of Folds")
     print("For this data set and this set of models, the accuracy changes\n"
           "very little with differing numbers of folds.\n"
-          "This indicates good generalisation of the models.\n")
+          "This indicates good generalisation of the models.")
     plt.show()
+
+def optimise_knn_parameters(feature_data, classification_data_numerical):
+    """
+    Find the set of parameters for a k-nearest neighbour classifier that yields
+    the best accuracy.
+    """
+
+    feature_data_train, _, classification_data_train, _ = \
+        train_test_split(feature_data, classification_data_numerical)
+
+    parameters = [{
+        'n_neighbors': [1, 3, 5, 10, 50, 100],
+        'weights': ['uniform', 'distance']
+    }]
+    n_folds = 10
+
+    clf = GridSearchCV(
+        neighbors.KNeighborsClassifier(), parameters, cv=n_folds,
+        scoring="f1" # f1 = standard measure of model accuracy
+    )
+    clf.fit(feature_data_train, classification_data_train)
+
+    print("\nThe grid search scores for a k-nearest neighbour classifier were:")
+    for params, mean_score, scores in clf.grid_scores_:
+        print("%.1f (+-%0.03f s.d.) for %r" % (100*mean_score, scores.std()/2, params))
+
+    print("The best parameter set found was:\n", clf.best_estimator_)
 
 
 def main():
@@ -84,5 +113,6 @@ def main():
     classification_data_numerical = label_encoder.transform(classification_data)
 
     plot_accuracy_vs_folds(feature_data, classification_data_numerical)
+    optimise_knn_parameters(feature_data, classification_data_numerical)
 
 main()
