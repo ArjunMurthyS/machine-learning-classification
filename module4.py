@@ -53,11 +53,42 @@ def test_nearest_neighbors(feature_data, classification_data_numerical):
             % (n_neighbors, n_differences)
         )
         print(
-            "This corresponds to an accuracy of %.1f%%" %
+            "This corresponds to an accuracy of %.1f%%\n" %
             (metrics.accuracy_score(
                 classification_data_numerical, predicted_classification
             ) * 100)
         )
+
+def optimise_nearest_neighbours(feature_data, classification_data_numerical):
+    """
+    Find the best combination of parameters for a nearest neighbour classifier
+    for this data set.
+    """
+
+    max_accuracy = None
+    best_n_neighbors = best_weighting = None
+    for n_neighbors in range(3, 16):
+        for weighting in ['uniform', 'distance']:
+            knn = neighbors.KNeighborsClassifier(
+                n_neighbors, weights=weighting
+            )
+            knn_fitted = knn.fit(feature_data, classification_data_numerical)
+            predicted_classification = knn_fitted.predict(feature_data)
+            accuracy = metrics.accuracy_score(
+                classification_data_numerical, predicted_classification
+            )
+            print(
+                "For %d nearest neighbours with %s weighting, accuracy is %.1f"
+                % (n_neighbors, weighting, 100*accuracy)
+            )
+            if accuracy > max_accuracy:
+                max_accuracy = accuracy
+                best_n_neighbors = n_neighbors
+                best_weighting = weighting
+    print(
+        "Best parameters seem to be %d nearest neighbours with %s weighting"
+        % (best_n_neighbors, best_weighting)
+    )
 
 def main():
     """
@@ -72,5 +103,6 @@ def main():
     classification_data_numerical = label_encoder.transform(classification_data)
 
     test_nearest_neighbors(feature_data, classification_data_numerical)
+    optimise_nearest_neighbours(feature_data, classification_data_numerical)
 
 main()
