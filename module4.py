@@ -8,6 +8,7 @@ from __future__ import print_function
 from sklearn import neighbors
 from sklearn import preprocessing
 from sklearn import metrics
+from sklearn.cross_validation import train_test_split
 import wdbc
 
 def test_nearest_neighbors(feature_data, classification_data_numerical):
@@ -89,6 +90,39 @@ def optimise_nearest_neighbours(feature_data, classification_data_numerical):
         "Best parameters seem to be %d nearest neighbours with %s weighting"
         % (best_n_neighbors, best_weighting)
     )
+    print("\nNote that, at least for this dataset, distance-based weighting\n"
+          "performs better than uniform weighting, even when the numbers of\n"
+          "neighbours is increased; the extra neighbours have a negligible\n"
+          "contribution because they are far away.\n")
+
+def validation_metrics(feature_data, classification_data_numerical):
+    """
+    Print validation metrics for a simple nearest-neighbour classifier.
+    """
+    print("We're now going to try splitting the original data set into two\n"
+          "parts, so that we can use one of the two parts as completely\n"
+          "novel test data.\n")
+    # the default split is 75%/25% train/test
+    feature_data_train, feature_data_test, \
+    classification_data_train, classification_data_test = \
+        train_test_split(feature_data, classification_data_numerical)
+
+    print("Shape of training feature set is: ", feature_data_train.shape)
+    print("Shape of training classifications is: ", classification_data_train.shape)
+    print("Shape of test feature set is: ", feature_data_test.shape)
+    print("Shape of test classifications is: ", classification_data_test.shape)
+
+    knn = neighbors.KNeighborsClassifier(n_neighbors=3)
+    knn_fitted = knn.fit(feature_data_train, classification_data_train)
+    predicted_classification = knn_fitted.predict(feature_data_test)
+
+    print(
+        "\nThe validation metrics for a simple 3 nearest neighbour\n"
+        "classifier are:\n",
+        metrics.classification_report(
+            classification_data_test, predicted_classification
+        )
+    )
 
 def main():
     """
@@ -104,5 +138,6 @@ def main():
 
     test_nearest_neighbors(feature_data, classification_data_numerical)
     optimise_nearest_neighbours(feature_data, classification_data_numerical)
+    validation_metrics(feature_data, classification_data_numerical)
 
 main()
