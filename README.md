@@ -1,5 +1,5 @@
-# Cambridge Coding Academy
-# Machine Learning with Python
+### Cambridge Coding Academy
+### Machine Learning with Python
 
 Code used for "Machine Learning with Python" workshop
 at Cambridge Coding Academy:
@@ -20,3 +20,8 @@ Modules cover:
 * **Module 6**:
   Using *k*-fold cross-validation to evaluate classifier generalisation,
   and parameter optimisation using grid search
+
+Some interesting plots:
+
+![k-nearest neighbours](/sample_plots/knn.png?raw=true)
+![breast cancer data distribution](/sample_plots/cancer_data_distribution.png?raw=true)
